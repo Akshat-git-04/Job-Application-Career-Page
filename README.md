@@ -93,7 +93,7 @@ npm install
 npm run dev
 ````
 
-The app runs at `http://localhost:3000`.
+The app runs at `http://localhost:5173`.
 
 ---
 
