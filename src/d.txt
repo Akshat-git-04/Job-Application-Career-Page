@@ -1,0 +1,44 @@
+src/
+│
+├── api/                      # React Query API functions
+│   └── formApi.js
+│
+├── app/                      # Redux store setup
+│   ├── store.js
+│   └── slices/
+│       └── formSlice.js      # Manages form state, localStorage persistence
+│
+├── components/               # Reusable components
+│   ├── form/
+│   │   ├── DynamicField.jsx  # Renders field from schema (input, select, etc.)
+│   │   ├── FileUploader.jsx  # Drag & drop upload with progress
+│   │   ├── StepNavigator.jsx # Next/Back navigation for wizard
+│   │   ├── ProgressBar.jsx   # Shows step progress
+│   │   └── ValidationError.jsx
+│   │
+│   ├── layout/
+│   │   └── Container.jsx     # Wrapper for page layout
+│   │
+│   └── ui/
+│       ├── Button.jsx
+│       ├── Input.jsx
+│       └── Select.jsx
+│
+├── constants/
+│   └── formSchemas.js        # JSON schemas for dynamic forms
+│
+├── hooks/
+│   ├── useAutoSave.js        # Auto-save form data to localStorage
+│   └── useFormWizard.js      # Handles multi-step logic
+│
+├── pages/
+│   ├── JobApplicationForm.jsx # Main multi-step form page
+│   └── SuccessPage.jsx
+│
+├── utils/
+│   ├── validation.js         # Custom validation (cross-field, password, etc.)
+│   └── storage.js            # LocalStorage helpers
+│
+├── App.jsx
+├── main.jsx
+└── index.css
