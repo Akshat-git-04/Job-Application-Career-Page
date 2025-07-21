@@ -1,6 +1,7 @@
-// src/components/form/FileUploader.jsx
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { motion } from 'framer-motion';
+import { Upload } from 'lucide-react';
 
 export default function FileUploader({ onFileSelect }) {
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -11,7 +12,6 @@ export default function FileUploader({ onFileSelect }) {
     setFileName(file.name);
     onFileSelect(file);
 
-    // Simulate upload progress
     let progress = 0;
     const interval = setInterval(() => {
       progress += 10;
@@ -23,25 +23,34 @@ export default function FileUploader({ onFileSelect }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div
+    <motion.div
       {...getRootProps()}
-      className={`p-6 border-2 border-dashed rounded-lg cursor-pointer text-center ${
-        isDragActive ? 'bg-blue-100 border-blue-400' : 'bg-gray-50 border-gray-300'
-      }`}
+      className={`p-6 border-2 border-dashed rounded-xl cursor-pointer text-center transition ${
+        isDragActive ? 'bg-blue-100 border-blue-400' : 'bg-white/70 border-gray-300 backdrop-blur'
+      } shadow-sm`}
+      whileHover={{ scale: 1.03 }}
     >
       <input {...getInputProps()} />
+      <Upload className="mx-auto mb-2 text-blue-500" size={28} />
       <p className="text-gray-700">
-        {fileName ? `Selected: ${fileName}` : 'Drag & drop your resume here, or click to select'}
+        {fileName ? `Selected: ${fileName}` : 'Drag & drop your resume, or click to select'}
       </p>
 
       {uploadProgress > 0 && (
-        <div className="mt-3 w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-green-500 h-2.5 rounded-full transition-all"
-            style={{ width: `${uploadProgress}%` }}
-          ></div>
-        </div>
+        <motion.div
+          className="mt-4 w-full bg-gray-200 rounded-full h-2.5 overflow-hidden"
+          initial={{ width: 0 }}
+          animate={{ width: '100%' }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div
+            className="bg-gradient-to-r from-green-400 to-blue-500 h-2.5 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${uploadProgress}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

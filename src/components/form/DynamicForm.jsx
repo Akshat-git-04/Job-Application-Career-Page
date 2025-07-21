@@ -1,7 +1,9 @@
-// src/components/form/DynamicForm.jsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { updateField } from '../../app/slices/formSlice';
 import FileUploader from './FileUploader';
 
@@ -14,17 +16,19 @@ export default function DynamicForm({ schema, onSubmit }) {
     defaultValues: savedData,
   });
 
- const handleFieldChange = (name, value) => {
-  // Convert Date objects to string for Redux
-  let formattedValue = value;
-  if (value instanceof Date) {
-    formattedValue = value.toISOString().split('T')[0]; // "YYYY-MM-DD"
-  }
+  const [showPassword, setShowPassword] = useState({});
 
-  dispatch(updateField({ field: name, value: formattedValue }));
-  setValue(name, formattedValue);
-};
+  const handleFieldChange = (name, value) => {
+    let formattedValue =
+      value instanceof Date ? value.toISOString().split('T')[0] : value;
 
+    dispatch(updateField({ field: name, value: formattedValue }));
+    setValue(name, formattedValue);
+  };
+
+  const togglePassword = (name) => {
+    setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
 
   const submitHandler = (data) => {
     Object.entries(data).forEach(([field, value]) => {
@@ -33,48 +37,69 @@ export default function DynamicForm({ schema, onSubmit }) {
     if (onSubmit) onSubmit(data);
   };
 
-  // Watch a field to conditionally render others
   const yearsOfExperience = watch('experienceYears', savedData.experienceYears || 0);
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
+    <motion.form
+      onSubmit={handleSubmit(submitHandler)}
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       {schema.fields.map((field) => {
-        // Conditional rendering: skip employerName unless experienceYears > 0
-        if (field.name === 'employerName' && yearsOfExperience <= 0) {
-          return null;
-        }
+        if (field.name === 'employerName' && yearsOfExperience <= 0) return null;
+
+        const isPassword = field.type === 'password';
 
         return (
-          <div key={field.name} className="flex flex-col">
-            <label className="mb-1 font-medium">{field.label}</label>
+          <motion.div
+            key={field.name}
+            className="flex flex-col relative"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+          >
+            <label className="mb-2 font-semibold text-gray-700">{field.label}</label>
 
             {field.type === 'file' ? (
               <FileUploader
                 onFileSelect={(file) => handleFieldChange(field.name, file.name)}
               />
             ) : (
-              <input
-                type={field.type}
-                {...register(field.name)}
-                className="border rounded p-2"
-                onChange={(e) => handleFieldChange(field.name, e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  type={isPassword && showPassword[field.name] ? 'text' : field.type}
+                  {...register(field.name)}
+                  className="w-full border rounded-lg px-4 py-2 pr-10 bg-white/70 backdrop-blur-md focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
+                  onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                />
+                {isPassword && (
+                  <button
+                    type="button"
+                    onClick={() => togglePassword(field.name)}
+                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword[field.name] ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                )}
+              </div>
             )}
 
             {errors[field.name] && (
-              <p className="text-red-500 text-sm">{errors[field.name].message}</p>
+              <p className="text-red-500 text-sm mt-1">{errors[field.name].message}</p>
             )}
-          </div>
+          </motion.div>
         );
       })}
 
-      <button
+      <motion.button
         type="submit"
-        className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+        className="mt-4 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.97 }}
       >
         Save & Continue
-      </button>
-    </form>
+      </motion.button>
+    </motion.form>
   );
 }
-

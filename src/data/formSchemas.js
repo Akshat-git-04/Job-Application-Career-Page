@@ -11,8 +11,16 @@ export const personalDetailsSchema = {
     { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
   ],
   validation: yup.object().shape({
-    firstName: yup.string().required('First name is required'),
-    lastName: yup.string().required('Last name is required'),
+    firstName: yup
+    .string()
+    .matches(/^(?!\d+$)[a-zA-Z\s'-]+$/, 'First name must contain letters and not only numbers')
+    .required('First name is required'),
+
+    lastName: yup
+    .string()
+    .matches(/^(?!\d+$)[a-zA-Z\s'-]+$/, 'Last name must contain letters and not only numbers')
+    .required('Last name is required'),
+
     email: yup.string().email('Invalid email').required('Email is required'),
     password: yup.string().min(6, 'Password must be at least 6 chars').required(),
     confirmPassword: yup
