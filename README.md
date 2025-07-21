@@ -87,7 +87,7 @@ offlineMiddleware.js     # Queues Redux actions while offline
 
 ### Installation
 ```bash
-git clone [https://github.com/Akshat-git-04/Job-Application-Career-Page](https://github.com/Akshat-git-04/Job-Application-Career-Page)
+git clone https://github.com/Akshat-git-04/Job-Application-Career-Page
 cd job-application-portal
 npm install
 npm run dev
