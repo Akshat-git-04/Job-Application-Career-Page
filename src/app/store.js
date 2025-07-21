@@ -1,8 +1,7 @@
-// src/app/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import formReducer from './slices/formSlice';
+import { offlineMiddleware } from './middleware/offlineMiddleware';
 
-// Middleware to save state to localStorage on every change
 const saveState = (state) => {
   try {
     localStorage.setItem('formData', JSON.stringify(state.form));
@@ -11,11 +10,23 @@ const saveState = (state) => {
   }
 };
 
-// Load state from localStorage on app start
 const loadState = () => {
   try {
     const serialized = localStorage.getItem('formData');
-    return serialized ? { form: JSON.parse(serialized) } : undefined;
+    if (!serialized) return undefined;
+
+    const loaded = JSON.parse(serialized);
+
+    // Ensure default users exist if missing
+    if (!loaded.users || loaded.users.length === 0) {
+      loaded.users = [
+        { id: '1', name: 'Alice', role: 'user' },
+        { id: '2', name: 'Bob', role: 'manager' },
+        { id: '3', name: 'Charlie', role: 'admin' },
+      ];
+    }
+
+    return { form: loaded };
   } catch (err) {
     console.error('Failed to load state', err);
     return undefined;
@@ -28,10 +39,10 @@ export const store = configureStore({
   reducer: {
     form: formReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(offlineMiddleware),
   preloadedState,
 });
 
-// Subscribe to store changes and persist
 store.subscribe(() => {
   saveState(store.getState());
 });
